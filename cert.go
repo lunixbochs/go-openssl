@@ -90,7 +90,7 @@ func (n *Name) AddTextEntry(field, value string) error {
 	defer C.free(unsafe.Pointer(cvalue))
 	ret := C.X509_NAME_add_entry_by_txt(
 		n.name, cfield, C.MBSTRING_ASC, cvalue, -1, -1, 0)
-	if ret == 0 {
+	if ret <= 0 {
 		return errors.New("failed to add x509 name text entry")
 	}
 	return nil
@@ -162,7 +162,7 @@ func (c *Certificate) GetIssuerName() (*Name, error) {
 }
 
 func (c *Certificate) SetSubjectName(name *Name) error {
-	if C.X509_set_subject_name(c.x, name.name) == 0 {
+	if C.X509_set_subject_name(c.x, name.name) <= 0 {
 		return errors.New("failed to set subject name")
 	}
 	return nil
@@ -186,7 +186,7 @@ func (c *Certificate) SetIssuer(issuer *Certificate) error {
 // SetIssuerName populates the issuer name of a certificate.
 // Use SetIssuer instead, if possible.
 func (c *Certificate) SetIssuerName(name *Name) error {
-	if C.X509_set_issuer_name(c.x, name.name) == 0 {
+	if C.X509_set_issuer_name(c.x, name.name) <= 0 {
 		return errors.New("failed to set subject name")
 	}
 	return nil
@@ -194,7 +194,7 @@ func (c *Certificate) SetIssuerName(name *Name) error {
 
 // SetSerial sets the serial of a certificate.
 func (c *Certificate) SetSerial(serial int) error {
-	if C.ASN1_INTEGER_set(C.X509_get_serialNumber(c.x), C.long(serial)) == 0 {
+	if C.ASN1_INTEGER_set(C.X509_get_serialNumber(c.x), C.long(serial)) <= 0 {
 		return errors.New("failed to set serial")
 	}
 	return nil
@@ -223,7 +223,7 @@ func (c *Certificate) SetExpireDate(when time.Duration) error {
 // SetPubKey assigns a new public key to a certificate.
 func (c *Certificate) SetPubKey(pubKey PublicKey) error {
 	c.pubKey = pubKey
-	if C.X509_set_pubkey(c.x, pubKey.evpPKey()) == 0 {
+	if C.X509_set_pubkey(c.x, pubKey.evpPKey()) <= 0 {
 		return errors.New("failed to set public key")
 	}
 	return nil
@@ -271,7 +271,7 @@ func (c *Certificate) insecureSign(privKey PrivateKey, digest EVP_MD) error {
 	case EVP_SHA512:
 		md = C.EVP_sha512()
 	}
-	if C.X509_sign(c.x, privKey.evpPKey(), md) == 0 {
+	if C.X509_sign(c.x, privKey.evpPKey(), md) <= 0 {
 		return errors.New("failed to sign certificate")
 	}
 	return nil
@@ -291,7 +291,7 @@ func (c *Certificate) AddExtension(nid NID, value string) error {
 		return errors.New("failed to create x509v3 extension")
 	}
 	defer C.X509_EXTENSION_free(ex)
-	if C.X509_add_ext(c.x, ex, -1) == 0 {
+	if C.X509_add_ext(c.x, ex, -1) <= 0 {
 		return errors.New("failed to add x509v3 extension")
 	}
 	return nil
@@ -310,7 +310,7 @@ func (c *Certificate) AddExtensions(extensions map[NID]string) error {
 
 // LoadCertificateFromPEM loads an X509 certificate from a PEM-encoded block.
 func LoadCertificateFromPEM(pem_block []byte) (*Certificate, error) {
-	if len(pem_block) == 0 {
+	if len(pem_block) <= 0 {
 		return nil, errors.New("empty pem block")
 	}
 	runtime.LockOSThread()
@@ -336,7 +336,7 @@ func (c *Certificate) MarshalPEM() (pem_block []byte, err error) {
 		return nil, errors.New("failed to allocate memory BIO")
 	}
 	defer C.BIO_free(bio)
-	if int(C.PEM_write_bio_X509(bio, c.x)) != 1 {
+	if int(C.PEM_write_bio_X509(bio, c.x)) <= 0 {
 		return nil, errors.New("failed dumping certificate")
 	}
 	return ioutil.ReadAll(asAnyBio(bio))

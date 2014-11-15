@@ -65,7 +65,7 @@ func (c *Certificate) CheckHost(host string, flags CheckFlags) error {
 	if rv > 0 {
 		return nil
 	}
-	if rv == 0 {
+	if rv <= 0 {
 		return ValidationError
 	}
 	return errors.New("hostname validation had an internal failure")
@@ -84,7 +84,7 @@ func (c *Certificate) CheckEmail(email string, flags CheckFlags) error {
 	if rv > 0 {
 		return nil
 	}
-	if rv == 0 {
+	if rv <= 0 {
 		return ValidationError
 	}
 	return errors.New("email validation had an internal failure")
@@ -102,7 +102,7 @@ func (c *Certificate) CheckIP(ip net.IP, flags CheckFlags) error {
 	if rv > 0 {
 		return nil
 	}
-	if rv == 0 {
+	if rv <= 0 {
 		return ValidationError
 	}
 	return errors.New("ip validation had an internal failure")

@@ -40,7 +40,7 @@ func EngineById(name string) (*Engine, error) {
 	if e.e == nil {
 		return nil, fmt.Errorf("engine %s missing", name)
 	}
-	if C.ENGINE_init(e.e) == 0 {
+	if C.ENGINE_init(e.e) <= 0 {
 		C.ENGINE_free(e.e)
 		return nil, fmt.Errorf("engine %s not initialized", name)
 	}

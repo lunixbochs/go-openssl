@@ -235,7 +235,7 @@ func (c *Ctx) SetEllipticCurve(curve EllipticCurve) error {
 	}
 	defer C.EC_KEY_free(k)
 
-	if int(C.SSL_CTX_set_tmp_ecdh_not_a_macro(c.ctx, k)) != 1 {
+	if int(C.SSL_CTX_set_tmp_ecdh_not_a_macro(c.ctx, k)) <= 0 {
 		return errorFromErrorQueue()
 	}
 
@@ -248,7 +248,7 @@ func (c *Ctx) UseCertificate(cert *Certificate) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	c.cert = cert
-	if int(C.SSL_CTX_use_certificate(c.ctx, cert.x)) != 1 {
+	if int(C.SSL_CTX_use_certificate(c.ctx, cert.x)) <= 0 {
 		return errorFromErrorQueue()
 	}
 	return nil
@@ -260,7 +260,7 @@ func (c *Ctx) AddChainCertificate(cert *Certificate) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	c.chain = append(c.chain, cert)
-	if int(C.SSL_CTX_add_extra_chain_cert_not_a_macro(c.ctx, cert.x)) != 1 {
+	if int(C.SSL_CTX_add_extra_chain_cert_not_a_macro(c.ctx, cert.x)) <= 0 {
 		return errorFromErrorQueue()
 	}
 	return nil
@@ -272,7 +272,7 @@ func (c *Ctx) UsePrivateKey(key PrivateKey) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	c.key = key
-	if int(C.SSL_CTX_use_PrivateKey(c.ctx, key.evpPKey())) != 1 {
+	if int(C.SSL_CTX_use_PrivateKey(c.ctx, key.evpPKey())) <= 0 {
 		return errorFromErrorQueue()
 	}
 	return nil
@@ -301,7 +301,7 @@ func (s *CertificateStore) AddCertificate(cert *Certificate) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	s.certs = append(s.certs, cert)
-	if int(C.X509_STORE_add_cert(s.store, cert.x)) != 1 {
+	if int(C.X509_STORE_add_cert(s.store, cert.x)) <= 0 {
 		return errorFromErrorQueue()
 	}
 	return nil
@@ -359,7 +359,7 @@ func (c *Ctx) LoadVerifyLocations(ca_file string, ca_path string) error {
 		c_ca_path = C.CString(ca_path)
 		defer C.free(unsafe.Pointer(c_ca_path))
 	}
-	if C.SSL_CTX_load_verify_locations(c.ctx, c_ca_file, c_ca_path) != 1 {
+	if C.SSL_CTX_load_verify_locations(c.ctx, c_ca_file, c_ca_path) <= 0 {
 		return errorFromErrorQueue()
 	}
 	return nil
@@ -479,7 +479,7 @@ func (c *Ctx) SetSessionId(session_id []byte) error {
 		ptr = (*C.uchar)(unsafe.Pointer(&session_id[0]))
 	}
 	if int(C.SSL_CTX_set_session_id_context(c.ctx, ptr,
-		C.uint(len(session_id)))) == 0 {
+		C.uint(len(session_id)))) <= 0 {
 		return errorFromErrorQueue()
 	}
 	return nil
@@ -493,7 +493,7 @@ func (c *Ctx) SetCipherList(list string) error {
 	defer runtime.UnlockOSThread()
 	clist := C.CString(list)
 	defer C.free(unsafe.Pointer(clist))
-	if int(C.SSL_CTX_set_cipher_list(c.ctx, clist)) == 0 {
+	if int(C.SSL_CTX_set_cipher_list(c.ctx, clist)) <= 0 {
 		return errorFromErrorQueue()
 	}
 	return nil

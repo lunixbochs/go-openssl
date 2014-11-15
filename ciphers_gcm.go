@@ -88,7 +88,7 @@ func NewGCMEncryptionCipherCtx(blocksize int, e *Engine, key, iv []byte) (
 			return nil, fmt.Errorf("could not set IV len to %d: %s",
 				len(iv), err)
 		}
-		if 1 != C.EVP_EncryptInit_ex(ctx.ctx, nil, nil, nil,
+		if 0 >= C.EVP_EncryptInit_ex(ctx.ctx, nil, nil, nil,
 			(*C.uchar)(&iv[0])) {
 			return nil, errors.New("failed to apply IV")
 		}
@@ -112,7 +112,7 @@ func NewGCMDecryptionCipherCtx(blocksize int, e *Engine, key, iv []byte) (
 			return nil, fmt.Errorf("could not set IV len to %d: %s",
 				len(iv), err)
 		}
-		if 1 != C.EVP_DecryptInit_ex(ctx.ctx, nil, nil, nil,
+		if 0 >= C.EVP_DecryptInit_ex(ctx.ctx, nil, nil, nil,
 			(*C.uchar)(&iv[0])) {
 			return nil, errors.New("failed to apply IV")
 		}
@@ -125,7 +125,7 @@ func (ctx *authEncryptionCipherCtx) ExtraData(aad []byte) error {
 		return nil
 	}
 	var outlen C.int
-	if 1 != C.EVP_EncryptUpdate(ctx.ctx, nil, &outlen, (*C.uchar)(&aad[0]),
+	if 0 >= C.EVP_EncryptUpdate(ctx.ctx, nil, &outlen, (*C.uchar)(&aad[0]),
 		C.int(len(aad))) {
 		return errors.New("failed to add additional authenticated data")
 	}
@@ -137,7 +137,7 @@ func (ctx *authDecryptionCipherCtx) ExtraData(aad []byte) error {
 		return nil
 	}
 	var outlen C.int
-	if 1 != C.EVP_DecryptUpdate(ctx.ctx, nil, &outlen, (*C.uchar)(&aad[0]),
+	if 0 >= C.EVP_DecryptUpdate(ctx.ctx, nil, &outlen, (*C.uchar)(&aad[0]),
 		C.int(len(aad))) {
 		return errors.New("failed to add additional authenticated data")
 	}

@@ -54,7 +54,7 @@ func (s *SHA256Hash) Close() {
 }
 
 func (s *SHA256Hash) Reset() error {
-	if 1 != C.EVP_DigestInit_ex(&s.ctx, C.EVP_sha256(), engineRef(s.engine)) {
+	if 0 >= C.EVP_DigestInit_ex(&s.ctx, C.EVP_sha256(), engineRef(s.engine)) {
 		return errors.New("openssl: sha256: cannot init digest ctx")
 	}
 	return nil
@@ -64,7 +64,7 @@ func (s *SHA256Hash) Write(p []byte) (n int, err error) {
 	if len(p) == 0 {
 		return 0, nil
 	}
-	if 1 != C.EVP_DigestUpdate(&s.ctx, unsafe.Pointer(&p[0]),
+	if 0 >= C.EVP_DigestUpdate(&s.ctx, unsafe.Pointer(&p[0]),
 		C.size_t(len(p))) {
 		return 0, errors.New("openssl: sha256: cannot update digest")
 	}
@@ -72,7 +72,7 @@ func (s *SHA256Hash) Write(p []byte) (n int, err error) {
 }
 
 func (s *SHA256Hash) Sum() (result [32]byte, err error) {
-	if 1 != C.EVP_DigestFinal_ex(&s.ctx,
+	if 0 >= C.EVP_DigestFinal_ex(&s.ctx,
 		(*C.uchar)(unsafe.Pointer(&result[0])), nil) {
 		return result, errors.New("openssl: sha256: cannot finalize ctx")
 	}
