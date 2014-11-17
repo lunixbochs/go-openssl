@@ -4,6 +4,7 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -y libssl-dev
   - uname -a
+  - cat /etc/lsb-release
 
 go:
   - 1.2
