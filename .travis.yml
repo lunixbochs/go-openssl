@@ -2,9 +2,11 @@ language: go
 
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -y libssl-dev
-  - uname -a
-  - cat /etc/lsb-release
+  - sudo apt-get install -y build-essential
+  - sudo apt-get build-dep -y libssl-dev
+  - wget https://www.openssl.org/source/openssl-1.0.1j.tar.gz
+  - tar -zxf openssl-1.0.1j.tar.gz
+  - cd openssl-1.0.1j && ./config && make && make install
 
 go:
   - 1.2
