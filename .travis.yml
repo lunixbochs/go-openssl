@@ -7,6 +7,8 @@ before_install:
   - tar -zxf openssl-1.0.1j.tar.gz
   - cd openssl-1.0.1j && ./config && make && sudo make install
 
+script: go test -v .
+
 go:
   - 1.2
   - 1.3
