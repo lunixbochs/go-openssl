@@ -5,7 +5,7 @@ before_install:
   - sudo apt-get build-dep -y openssl
   - wget https://www.openssl.org/source/openssl-1.0.1j.tar.gz
   - tar -zxf openssl-1.0.1j.tar.gz
-  - cd openssl-1.0.1j && ./config && make && sudo make install && cd -
+  - cd openssl-1.0.1j && ./config --prefix=/usr && make && sudo make install && cd -
 
 script: go test -v .
 
