@@ -110,6 +110,8 @@ func (n *Name) AddTextEntries(entries map[string]string) error {
 // on the provided CertificateInfo struct
 func NewCertificate(info *CertificateInfo, key PublicKey) (*Certificate, error) {
 	c := &Certificate{x: C.X509_new()}
+	// set x509 version 3 (yes, 2 means 3 here)
+	C.X509_set_version(c.x, 2)
 	runtime.SetFinalizer(c, func(c *Certificate) {
 		C.X509_free(c.x)
 	})
